@@ -14,12 +14,14 @@ import (
 	"github.com/CloudPassenger/rnm-go/config"
 	"github.com/CloudPassenger/rnm-go/dispatcher"
 	"github.com/CloudPassenger/rnm-go/infra/pool"
-	"github.com/database64128/tfo-go"
+	"github.com/database64128/tfo-go/v2"
+
+	proxyproto "github.com/pires/go-proxyproto"
 )
 
 const (
 	BasicLen = 517  // Encrypted Payload of TLS
-	MaxLen   = 8192 // Buffer setting from REALITY
+	MaxLen   = 2048 // optimized buffer length
 )
 
 func init() {
@@ -52,12 +54,18 @@ func (d *TCP) Listen() (err error) {
 	lc := tfo.ListenConfig{
 		DisableTFO: !d.group.ListenerTCPFastOpen,
 	}
-	d.l, err = lc.Listen(context.Background(), "tcp", fmt.Sprintf(":%d", d.group.Port))
+	tl, err := lc.Listen(context.Background(), "tcp", fmt.Sprintf(":%d", d.group.Port))
 	if err != nil {
 		return
 	}
+	if d.group.AcceptProxyProtocol {
+		d.l = &proxyproto.Listener{Listener: tl}
+		log.Printf("[tcp] listen on :%v (accept proxy)\n", d.group.Port)
+	} else {
+		d.l = tl
+		log.Printf("[tcp] listen on :%v\n", d.group.Port)
+	}
 	defer d.l.Close()
-	log.Printf("[tcp] listen on :%v\n", d.group.Port)
 	for {
 		conn, err := d.l.Accept()
 		if err != nil {
@@ -95,6 +103,10 @@ func (d *TCP) handleConn(conn net.Conn) error {
 
 	if d.group.AuthTimeoutSec > 0 {
 		conn.SetReadDeadline(time.Now().Add(time.Duration(d.group.AuthTimeoutSec) * time.Second))
+	}
+
+	if conn.LocalAddr() == nil {
+		return fmt.Errorf("[tcp] %s: couldn't retrieve source address", conn.RemoteAddr())
 	}
 
 	data := pool.Get(MaxLen)
@@ -142,9 +154,28 @@ func (d *TCP) handleConn(conn net.Conn) error {
 		DisableTFO: !server.TCPFastOpen,
 	}
 	dialer.Timeout = time.Duration(d.group.DialTimeoutSec) * time.Second
-	rc, err := dialer.Dial("tcp", server.Target)
+	var initByte []byte
+	rc, err := dialer.Dial("tcp", server.Target, initByte)
 	if err != nil {
 		return fmt.Errorf("[tcp] %s <-> %s <-x-> %s handleConn dial error: %w", conn.RemoteAddr(), conn.LocalAddr(), server.Target, err)
+	}
+
+	if server.XVer > 0 {
+		hdr := &proxyproto.Header{
+			Version:           byte(server.XVer),
+			Command:           proxyproto.PROXY,
+			TransportProtocol: proxyproto.TCPv4,
+			SourceAddr:        conn.RemoteAddr().(*net.TCPAddr),
+			DestinationAddr: &net.TCPAddr{
+				IP:   []byte{0, 0, 0, 0},
+				Port: 0,
+				Zone: "",
+			},
+		}
+		_, err = hdr.WriteTo(rc)
+		if err != nil {
+			return fmt.Errorf("[tcp] %s <-> %s <-x-> %s send proxy header error: %w", conn.RemoteAddr(), conn.LocalAddr(), server.Target, err)
+		}
 	}
 
 	_, err = rc.Write(data[:n])

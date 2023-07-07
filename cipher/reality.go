@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	size = 8192
+	size = 2048
 )
 
 type RealityCipher struct {
@@ -28,17 +28,17 @@ func Value(vals ...byte) (value int) {
 
 func (conf *RealityCipher) Verify(data []byte, privKey []byte) ([]byte, bool) {
 	n := len(data)
-	buf := pool.Get(n)
-	defer pool.Put(buf)
-	copy(buf, data)
 	if n <= recordHeaderLen {
 		// fmt.Println("not tls handshake")
 		return nil, false
 	}
 	// Reality detect clientHello length
 	clientHelloLen := 0
-	c2sSaved := make([]byte, 0, size)
-	c2sSaved = append(c2sSaved, buf[:n]...)
+	// c2sSaved := make([]byte, 0, size)
+	// c2sSaved = append(c2sSaved, data[:n]...)
+	c2sSaved := pool.Get(size)
+	defer pool.Put(c2sSaved)
+	copy(c2sSaved, data[:n])
 	if clientHelloLen == 0 && len(c2sSaved) > recordHeaderLen {
 		if recordType(c2sSaved[0]) != recordTypeHandshake || Value(c2sSaved[1:3]...) != VersionTLS10 || c2sSaved[5] != typeClientHello {
 			fmt.Println("Wrong TLS record, send to fallback")
@@ -53,7 +53,7 @@ func (conf *RealityCipher) Verify(data []byte, privKey []byte) ([]byte, bool) {
 	}
 	// parse client hello message
 	clientHello := &clientHelloMsg{}
-	ret := clientHello.unmarshal(buf[recordHeaderLen:clientHelloLen])
+	ret := clientHello.unmarshal(c2sSaved[recordHeaderLen:clientHelloLen])
 	if !ret {
 		// fmt.Println("parse hello message return false")
 		return nil, false

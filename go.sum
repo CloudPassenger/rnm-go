@@ -1,5 +1,7 @@
-github.com/database64128/tfo-go v1.1.2 h1:GwxtJp09BdUTVEoeT421t231eNZoGOCRkklbl4WI1kU=
-github.com/database64128/tfo-go v1.1.2/go.mod h1:jgrSUPyOvTGQyn6irCOpk7L2W/q/0VLZZcovQiMi+bI=
+github.com/database64128/tfo-go/v2 v2.0.6 h1:gA2SFhSl86g4Xg3aCxoq48VSrKoLhR07SZFFS8q3lfA=
+github.com/database64128/tfo-go/v2 v2.0.6/go.mod h1:50S8TP6k6okfwUv1vKFqFoF9AiP2w45Ej5psJm53/oc=
+github.com/pires/go-proxyproto v0.7.0 h1:IukmRewDQFWC7kfnb66CSomk2q/seBuilHBYFwyq0Hs=
+github.com/pires/go-proxyproto v0.7.0/go.mod h1:Vz/1JPY/OACxWGQNIRY2BeyDmpoaWmEP40O9LbuiFR4=
 golang.org/x/crypto v0.11.0 h1:6Ewdq3tDic1mg5xRO4milcWCfMVQhI4NkqWWvqejpuA=
 golang.org/x/crypto v0.11.0/go.mod h1:xgJhtzW8F9jGdVFWZESrid1U1bjeNy4zgy5cRr/CIio=
 golang.org/x/sys v0.10.0 h1:SqMFp9UcQJZa+pmYuAKjd9xq1f0j5rLcDIk0mj4qAsA=

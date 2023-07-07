@@ -6,17 +6,20 @@
       "authTimeoutSec": 30,
       "dialTimeoutSec": 10,
       "listenerTCPFastOpen": true,
+      "acceptProxyProtocol": false,
       "drainOnAuthFail": false,
       "servers": [
         {
           "name": "Reality Server 1",
           "target": "127.0.0.1:10443",
+          "xver": 1,
           "TCPFastOpen": true,
           "privKey": "WBoFxo2vPpljhzhhF7OsEmZV3gr1YTUDf80j3JeD0k8"
         },
         {
           "name": "Reality Server 2",
           "target": "127.0.0.1:10444",
+          "xver": 2,
           "TCPFastOpen": true,
           "privKey": "yC2ZjpzG_ZKbavHB8BkwVyUqm3D7bOhudEF0qHzaPGQ"
         }

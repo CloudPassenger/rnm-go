@@ -21,6 +21,7 @@ type Config struct {
 type Server struct {
 	Name        string `json:"name"`
 	Target      string `json:"target"`
+	XVer        int    `json:"xver"`
 	TCPFastOpen bool   `json:"TCPFastOpen"`
 	PassKey     string `json:"privKey"`
 	PrivateKey  []byte `json:"-"`
@@ -30,6 +31,7 @@ type Group struct {
 	Name                string           `json:"name"`
 	Port                int              `json:"port"`
 	ListenerTCPFastOpen bool             `json:"listenerTCPFastOpen"`
+	AcceptProxyProtocol bool             `json:"acceptProxyProtocol"`
 	Servers             []Server         `json:"servers"`
 	FallbackServer      string           `json:"fallback"`
 	UserContextPool     *UserContextPool `json:"-"`
@@ -112,7 +114,24 @@ func (config *Config) CheckDuplicatedPrivKey() error {
 	return nil
 }
 
+func (config *Config) CheckXver() error {
+	for _, g := range config.Groups {
+		for _, s := range g.Servers {
+			xver := s.XVer
+			if xver > 0 {
+				if xver != 1 && xver != 2 {
+					return fmt.Errorf("make sure the proxyprotocol version is correct: %s", s.Name)
+				}
+			}
+		}
+	}
+	return nil
+}
+
 func check(config *Config) (err error) {
+	if err = config.CheckXver(); err != nil {
+		return
+	}
 	if err = config.CheckPrivkeyLength(); err != nil {
 		return
 	}
