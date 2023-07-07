@@ -70,7 +70,7 @@ const (
 
 var (
 	config  *Config
-	Version = "v0.2.3"
+	Version = "v0.2.4"
 )
 
 func (g *Group) BuildPrivateKeys() {
