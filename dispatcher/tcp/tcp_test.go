@@ -1,10 +1,11 @@
 package tcp
 
 import (
-	"github.com/Qv2ray/mmp-go/config"
-	"math/rand"
+	"crypto/rand"
 	"net"
 	"testing"
+
+	"github.com/CloudPassenger/rnm-go/config"
 )
 
 func BenchmarkDispatcher_Auth(b *testing.B) {
@@ -14,12 +15,11 @@ func BenchmarkDispatcher_Auth(b *testing.B) {
 		var b [10]byte
 		rand.Read(b[:])
 		g.Servers = append(g.Servers, config.Server{
-			Target:   "127.0.0.1:1080",
-			Method:   "chacha20-ietf-poly1305",
-			Password: string(b[:]),
+			Target:  "127.0.0.1:1080",
+			PassKey: "MGVgZtEO6Rzrjelc-gwC7oSGsA9hYO3KcWnIu3wCYm4",
 		})
 	}
-	g.BuildMasterKeys()
+	g.BuildPrivateKeys()
 	g.BuildUserContextPool(10)
 	var buf [50]byte
 	var data [50]byte

@@ -5,43 +5,43 @@
 #### 1. copy binary file
 
 ```bash
-cp mmp-go /usr/bin/
+cp rnm-go /usr/bin/
 ```
 
 #### 2. add service file
 
 ```bash
 # copy service file to systemd
-cp systemd/mmp-go.service /etc/systemd/system/
+cp systemd/rnm-go.service /etc/systemd/system/
 ```
 
 #### 3. add config file: config.json
 
 ```bash
-# copy config file to /etc/mmp-go/
-mkdir /etc/mmp-go/
-cp example.json /etc/mmp-go/config.json
+# copy config file to /etc/rnm-go/
+mkdir /etc/rnm-go/
+cp config.example.json /etc/rnm-go/config.json
 ```
 
-#### 4. enable and start service: mmp-go
+#### 4. enable and start service: rnm-go
 
 ```bash
 # enable and start service
-systemctl enable --now mmp-go
+systemctl enable --now rnm-go
 ```
 
-See [mmp-go.service](mmp-go.service)
+See [rnm-go.service](rnm-go.service)
 
 ### Auto-Reload
 #### 1. enable and start
 ```bash
-systemctl enable --now mmp-go-reload.timer
+systemctl enable --now rnm-go-reload.timer
 ```
 
 #### 2. customize
 Execute the following command:
 ```bash
-systemctl edit mmp-go-reload.timer
+systemctl edit rnm-go-reload.timer
 ```
 
 Fill in your customized values, for example:
@@ -49,7 +49,7 @@ Fill in your customized values, for example:
 # empty value means to remove the preset value
 [Unit]
 Description=
-Description=Eight-Hourly Reload mmp-go service 
+Description=Eight-Hourly Reload rnm-go service 
 
 [Timer]
 OnActiveSec=

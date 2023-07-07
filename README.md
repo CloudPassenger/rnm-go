@@ -1,50 +1,42 @@
-# mmp-go
+# rnm-go
 
-![Mega Multiplexer logo](logo.png)
+![REALITY Name Multiplexer logo](logo.png)
 
-Mega Multiplexer, port mutiplexer for shadowsocks, supports AEAD methods only.
+REALITY Name Multiplexer, port mutiplexer for REALITY
 
 ### Intro
 
-You can use mmp-go to reuse single port to forward to multiple shadowsocks servers.
+You can use rnm-go to reuse single port to forward to multiple REALITY servers.
 
 It is suitable for relay servers with a limited number of ports.
 
 Consider the following:
 
-> \- 草，这破 NAT 🐔怎么就俩端口？<br/>
-> \- mmp，go！<br/>
+> \- 淦，65533 个端口都被墙🧱了！<br/>
+> \- rnm，go！<br/>
 
 ```bash
-                                                   |------> SS Server1
-Client --> Single Port --> Validator / Multiplexer |------> SS Server2
-                                                   |------> SS Server3
+                                                   |------> REALITY Destination 1
+                                                   |------> REALITY Destination 2
+Client --> Single Port --> Validator / Multiplexer |------> REALITY Destination 3
+                                                   |------> REALITY Destination 4
+                                                   |------> Fallback Destination
 ```
 
 ### Usage
 
 ```shell
-./mmp-go -conf example.json
+./rnm-go -conf config.json
 ```
 
-Refer to `example.json`
-
-### AEAD methods supported
-
-- chacha20-ietf-poly1305 (chacha20-poly1305)
-- aes-256-gcm
-- aes-128-gcm
+Refer to `config.example.json`
 
 ### Related projects
 
-- [Qv2ray/mmp-rs](https://github.com/Qv2ray/mmp-rs) A rust-lang implementation of Mega Multiplexer.
-- [mzz2017/outline-watch-dog](https://github.com/mzz2017/outline-watch-dog) Watch and keep read privilege for `/opt/outline` recursively to avoid permission denied.
+- [Qv2ray/mmp-go](https://github.com/Qv2ray/mmp-go) Mega Multiplexer, port mutiplexer for shadowsocks
+- [XTLS/REALITY](https://github.com/XTLS/REALITY) Censorship-resistant, fully emulated TLS protocol
 
-### Spark of thought from:
+### Thanks to:
 
-- [DuckSoft](https://github.com/DuckSoft)
-
-### Special thanks:
-
-- [studentmain](https://github.com/studentmain)
 - Qv2ray Developer Community
+- Project X

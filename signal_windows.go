@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/Qv2ray/mmp-go/config"
+	"github.com/CloudPassenger/rnm-go/config"
 )
 
 // not support windows

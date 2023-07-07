@@ -2,14 +2,12 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"sync"
 	"time"
 
-	"github.com/Qv2ray/mmp-go/config"
-	"github.com/Qv2ray/mmp-go/dispatcher"
-	_ "github.com/Qv2ray/mmp-go/dispatcher/tcp"
-	_ "github.com/Qv2ray/mmp-go/dispatcher/udp"
+	"github.com/CloudPassenger/rnm-go/config"
+	"github.com/CloudPassenger/rnm-go/dispatcher"
+	_ "github.com/CloudPassenger/rnm-go/dispatcher/tcp"
 )
 
 const HttpClientTimeout = 10 * time.Second
@@ -26,7 +24,7 @@ func NewSyncMapPortDispatcher() *SyncMapPortDispatcher {
 }
 
 var (
-	protocols       = [...]string{"tcp", "udp"}
+	protocols       = [...]string{"tcp"}
 	groupWG         sync.WaitGroup
 	mPortDispatcher = NewSyncMapPortDispatcher()
 )
@@ -46,7 +44,7 @@ func listenGroup(group *config.Group) {
 func listenProtocols(group *config.Group, protocols []string) error {
 	mPortDispatcher.Lock()
 	if _, ok := mPortDispatcher.Map[group.Port]; !ok {
-		mPortDispatcher.Map[group.Port] = new([2]dispatcher.Dispatcher)
+		mPortDispatcher.Map[group.Port] = new([1]dispatcher.Dispatcher)
 	}
 	t := mPortDispatcher.Map[group.Port]
 	mPortDispatcher.Unlock()
@@ -64,9 +62,7 @@ func listenProtocols(group *config.Group, protocols []string) error {
 }
 
 func main() {
-	conf := config.NewConfig(&http.Client{
-		Timeout: HttpClientTimeout,
-	})
+	conf := config.NewConfig()
 
 	// handle reload
 	go signalHandler(conf)

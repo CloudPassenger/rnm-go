@@ -1,0 +1,8 @@
+[Unit]
+Description=Reload rnm-go service
+Documentation=https://github.com/CloudPassenger/rnm-go/
+After=rnm-go.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/systemctl reload rnm-go.service

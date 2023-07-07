@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/Qv2ray/mmp-go/config"
+	"github.com/CloudPassenger/rnm-go/config"
 )
 
 func ReloadConfig(oldConf *config.Config) {
@@ -13,47 +13,13 @@ func ReloadConfig(oldConf *config.Config) {
 
 	// rebuild config
 	confPath := oldConf.ConfPath
-	httpClient := oldConf.HttpClient
-	newConf, err := config.BuildConfig(confPath, httpClient)
+	// httpClient := oldConf.HttpClient
+	newConf, err := config.BuildConfig(confPath)
 	if err != nil {
 		log.Printf("failed to reload configuration: %v", err)
 		return
 	}
 	// check if there is any net error when pulling the upstream configurations
-	for i := range newConf.Groups {
-		newGroup := &newConf.Groups[i]
-		for j := range newGroup.Upstreams {
-			newUpstream := newGroup.Upstreams[j]
-			pErr := newUpstream.PullingError
-			if pErr != nil {
-				log.Printf("skip to update some servers in group %v , error on upstream %v: %v", newGroup.Name, newUpstream.Name, pErr)
-				// error occurred, remain those servers
-
-				// find the group in the oldConf
-				var oldGroup *config.Group
-				for k := range oldConf.Groups {
-					// they should have the same port
-					if oldConf.Groups[k].Port != newGroup.Port {
-						continue
-					}
-					oldGroup = &oldConf.Groups[k]
-					break
-				}
-				if oldGroup == nil {
-					// cannot find the corresponding old group
-					continue
-				}
-				// check if upstreamConf can match
-				for k := range oldGroup.Servers {
-					oldServer := oldGroup.Servers[k]
-					if oldServer.UpstreamConf != nil && newUpstream.Equal(*oldServer.UpstreamConf) {
-						// remain the server
-						newGroup.Servers = append(newGroup.Servers, oldServer)
-					}
-				}
-			}
-		}
-	}
 	config.SetConfig(newConf)
 	c := newConf
 

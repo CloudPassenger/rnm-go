@@ -10,17 +10,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Qv2ray/mmp-go/cipher"
-	"github.com/Qv2ray/mmp-go/config"
-	"github.com/Qv2ray/mmp-go/dispatcher"
-	"github.com/Qv2ray/mmp-go/infra/pool"
+	"github.com/CloudPassenger/rnm-go/cipher"
+	"github.com/CloudPassenger/rnm-go/config"
+	"github.com/CloudPassenger/rnm-go/dispatcher"
+	"github.com/CloudPassenger/rnm-go/infra/pool"
 	"github.com/database64128/tfo-go"
 )
 
-//[salt][encrypted payload length][length tag][encrypted payload][payload tag]
 const (
-	BasicLen = 32 + 2 + 16
-	MaxLen   = BasicLen + 16383 + 16
+	BasicLen = 517  // Encrypted Payload of TLS
+	MaxLen   = 8192 // Buffer setting from REALITY
 )
 
 func init() {
@@ -102,7 +101,7 @@ func (d *TCP) handleConn(conn net.Conn) error {
 	defer pool.Put(data)
 	buf := pool.Get(BasicLen)
 	defer pool.Put(buf)
-	n, err := io.ReadAtLeast(conn, data, BasicLen)
+	n, err := io.ReadAtLeast(conn, data, BasicLen) // n: Whole bunch of data
 	if err != nil {
 		return fmt.Errorf("[tcp] %s <-x-> %s handleConn ReadAtLeast error: %w", conn.RemoteAddr(), conn.LocalAddr(), err)
 	}
@@ -126,7 +125,12 @@ func (d *TCP) handleConn(conn net.Conn) error {
 		}
 
 		// fallback
-		server = &d.group.Servers[0]
+		if d.group.FallbackServer != "" {
+			server = &config.Server{
+				Name:   "Fallback",
+				Target: d.group.FallbackServer,
+			}
+		}
 	}
 
 	if d.group.AuthTimeoutSec > 0 {
@@ -187,10 +191,9 @@ func (d *TCP) Auth(buf []byte, data []byte, userContext *config.UserContext) (hi
 
 func probe(buf []byte, data []byte, server *config.Server) ([]byte, bool) {
 	//[salt][encrypted payload length][length tag][encrypted payload][payload tag]
-	conf := cipher.CiphersConf[server.Method]
-
-	salt := data[:conf.SaltLen]
-	cipherText := data[conf.SaltLen : conf.SaltLen+2+conf.TagLen]
-
-	return conf.Verify(buf, server.MasterKey, salt, cipherText, nil)
+	conf := &cipher.RealityCipher{}
+	// privKey, _ := base64.RawURLEncoding.DecodeString(server.PassKey)
+	// salt := data[:conf.SaltLen]
+	// cipherText := data[conf.SaltLen : conf.SaltLen+2+conf.TagLen]
+	return conf.Verify(data, server.PrivateKey)
 }

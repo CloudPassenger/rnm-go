@@ -1,7 +1,7 @@
 package lru
 
 import (
-	"github.com/Qv2ray/mmp-go/infra/linklist"
+	"github.com/CloudPassenger/rnm-go/infra/linklist"
 	"sync"
 	"time"
 )

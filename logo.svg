@@ -1,54 +1,44 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="226.8mm" height="102.86mm" version="1.1" viewBox="0 0 226.8 102.86" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink">
- <title>Mega Multiplexer</title>
- <defs>
-  <linearGradient id="c" x1="53.975" x2="4.2333" y1="102.66" y2="102.66" gradientTransform="translate(7.4083 -74.083)" gradientUnits="userSpaceOnUse">
-   <stop stop-color="#197dbf" offset="0"/>
-   <stop stop-color="#197dbf" stop-opacity="0" offset="1"/>
-  </linearGradient>
-  <linearGradient id="b" x1="38.1" x2="4.2333" y1="139.7" y2="139.7" gradientTransform="translate(7.4083 -74.083)" gradientUnits="userSpaceOnUse">
-   <stop stop-color="#7488a1" offset="0"/>
-   <stop stop-color="#7488a1" stop-opacity="0" offset="1"/>
-  </linearGradient>
-  <linearGradient id="a" x1="38.1" x2="4.2333" y1="123.82" y2="123.82" gradientTransform="translate(7.4083 -74.083)" gradientUnits="userSpaceOnUse">
-   <stop stop-color="#e482a3" offset="0"/>
-   <stop stop-color="#e482a3" stop-opacity="0" offset="1"/>
-  </linearGradient>
- </defs>
- <metadata>
-  <rdf:RDF>
-   <cc:Work rdf:about="">
-    <dc:format>image/svg+xml</dc:format>
-    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:title>Mega Multiplexer</dc:title>
-    <dc:date>2020-12-31T01:38+08:00</dc:date>
-    <dc:creator>
-     <cc:Agent>
-      <dc:title>Student Main</dc:title>
-     </cc:Agent>
-    </dc:creator>
-    <dc:description>logo of Mega Multiplexer
-
-colors are picked from shadowsocks-windows, shadowsocksr, shadowsocks-android</dc:description>
-    <dc:contributor>
-     <cc:Agent>
-      <dc:title>Student Main</dc:title>
-     </cc:Agent>
-    </dc:contributor>
-    <dc:rights>
-     <cc:Agent>
-      <dc:title>GNU Affero General Public License v3.0</dc:title>
-     </cc:Agent>
-    </dc:rights>
-   </cc:Work>
-  </rdf:RDF>
- </metadata>
- <g transform="translate(8.8875 7.8538)">
-  <g>
-   <path d="m11.113 55.033h149.75l5.2917 5.2917-5.2917 5.2916h-149.75z" fill="url(#b)"/>
-   <path d="m11.113 39.158 165.63-1e-5 5.2917 5.2917-5.2917 5.2917-165.63 1e-5z" fill="url(#a)"/>
-   <path d="m11.642 23.283h180.98l5.2917 5.2917-5.2917 5.2917h-180.98z" fill="url(#c)"/>
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="226.8mm" height="102.86mm" version="1.1" viewBox="0 0 226.8 102.86" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:bx="https://boxy-svg.com">
+  <title>Mega Multiplexer</title>
+  <defs>
+    <linearGradient id="gradient-2" bx:pinned="true">
+      <stop style="stop-color: rgb(228, 130, 163);" offset="0"/>
+      <stop style="stop-color: rgba(228, 130, 163, 0);" offset="1"/>
+    </linearGradient>
+    <linearGradient id="gradient-0" bx:pinned="true">
+      <stop offset="0" style="stop-color: rgb(19, 88, 105);"/>
+      <stop offset="1" style="stop-color: rgba(19, 88, 105, 0);"/>
+    </linearGradient>
+    <radialGradient id="gradient-0-3" gradientUnits="userSpaceOnUse" cx="111.595" cy="-14.217" r="28.814" gradientTransform="matrix(1, 0, 0, 1, 0, 0)" xlink:href="#gradient-0"/>
+    <radialGradient id="gradient-0-9" gradientUnits="userSpaceOnUse" cx="179.206" cy="56.663" r="47.641" gradientTransform="matrix(-1.300824, 0.008017, -0.006163, -0.999981, 422.797699, 114.468989)" xlink:href="#gradient-0"/>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="152.105" y1="69.413" x2="152.105" y2="98.968" id="gradient-0-4" gradientTransform="matrix(-0.005486, -0.999984, 3.807872, -0.020889, -148.753648, 139.164161)" xlink:href="#gradient-0"/>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="118.514" y1="52.839" x2="118.514" y2="68.49" id="gradient-0-5" gradientTransform="matrix(-0.004644, -0.999989, 1.86275, -0.008651, 20.638482, 171.808752)" xlink:href="#gradient-0"/>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="182.973" y1="41.825" x2="182.973" y2="71.38" id="gradient-0-6" gradientTransform="matrix(0, -4.829597, 4.829597, 0, -36.092519, 937.082274)" xlink:href="#gradient-0"/>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="162.816" y1="116.559" x2="162.816" y2="146.114" id="gradient-0-1" gradientTransform="matrix(0, -1.331271, 1.331271, 0, 20.351787, 301.460937)" xlink:href="#gradient-0"/>
+    <style bx:fonts="Carme">@import url(https://fonts.googleapis.com/css2?family=Carme%3Aital%2Cwght%400%2C400&amp;display=swap);</style>
+    <linearGradient id="gradient-0-0" gradientUnits="userSpaceOnUse" x1="81.226" y1="31.631" x2="81.226" y2="47.282" gradientTransform="matrix(0.012616, 0.99992, -2.537894, 0.032021, 170.280227, -39.907376)" xlink:href="#gradient-0"/>
+  </defs>
+  <g transform="matrix(1, 0, 0, 1, -5.749434, 0.636548)">
+    <g>
+      <path d="M 104.465 76.392 H 175.938 L 175.938 69.413 L 199.746 84.191 L 175.938 98.968 L 175.938 91.99 H 104.465 V 76.392 Z" style="fill-rule: nonzero; paint-order: fill; fill: url(#gradient-0-1);" bx:shape="arrow 104.465 69.413 95.281 29.555 15.598 23.808 0 1@c9b03dae"/>
+      <path d="M 130.489 52.847 H 201.962 L 201.962 45.868 L 225.77 60.646 L 201.962 75.423 L 201.962 68.445 H 130.489 V 52.847 Z" style="fill-rule: nonzero; paint-order: fill; fill: url(#gradient-0-6);" bx:shape="arrow 130.489 45.868 95.281 29.555 15.598 23.808 0 1@50a41dfd"/>
+    </g>
+    <g>
+      <path d="M 83.129 -22.05 H 154.602 L 154.602 -29.029 L 178.41 -14.251 L 154.602 0.526 L 154.602 -6.452 H 83.129 V -22.05 Z" style="fill-rule: nonzero; paint-order: fill; fill: url(#gradient-0-4);" transform="matrix(1, 0, 0, -1, 0, 0)" bx:shape="arrow 83.129 -29.029 95.281 29.555 15.598 23.808 0 1@7e76eec4"/>
+      <rect x="82.781" y="-22.043" width="57.628" height="15.651" style="paint-order: fill; fill: url(#gradient-0-3);" transform="matrix(1, 0, 0, -1, 0, 0)"/>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, -38.453434, 10.883047)">
+      <rect x="52.412" y="31.631" width="57.628" height="15.651" style="paint-order: fill; fill: url(#gradient-0-0);"/>
+      <rect x="48.318" y="31.994" width="51.558" height="15.651" style="paint-order: fill; fill: rgb(19, 88, 105);" transform="matrix(-0.5, 0.866025, -0.866025, -0.5, 186.962723, -22.372122)"/>
+      <rect x="-48.318" y="-31.994" width="51.558" height="15.651" style="paint-order: fill; fill: rgb(19, 88, 105);" transform="matrix(-0.5, -0.866025, -0.866025, 0.5, 83.229494, 47.516574)"/>
+    </g>
+    <rect x="72.908" y="52.796" width="57.628" height="15.651" style="paint-order: fill; fill: rgb(19, 88, 105);"/>
+    <g transform="matrix(1, 0, 0, -1, -17.336185, 98.442078)">
+      <rect x="89.7" y="52.839" width="57.628" height="15.651" style="paint-order: fill; fill: url(#gradient-0-5);"/>
+      <path d="M 130.489 52.847 H 201.962 L 201.962 45.868 L 225.77 60.646 L 201.962 75.423 L 201.962 68.445 H 130.489 V 52.847 Z" style="fill-rule: nonzero; paint-order: fill; fill: url(#gradient-0-9);" bx:shape="arrow 130.489 45.868 95.281 29.555 15.598 23.808 0 1@50a41dfd"/>
+    </g>
+    <rect x="83.325" y="76.356" width="57.628" height="15.651" style="paint-order: fill; fill: rgb(19, 88, 105);"/>
   </g>
-  <text x="29.271111" y="75.002678" font-family="Staatliches" font-size="90.311px" stroke-width=".79375" style="line-height:1.25" xml:space="preserve"><tspan x="29.271111" y="75.002678" rotate="0 0 0 0" fill="#ffffff" font-size="90.311px" stroke="#000000" stroke-width=".79375">MMP</tspan></text>
- </g>
+  <text style="fill: rgb(255, 227, 227); font-family: Carme; font-size: 63px; font-weight: 900; letter-spacing: 1.1px; stroke: rgba(218, 31, 31, 0.74); stroke-linecap: round; stroke-linejoin: round; text-anchor: middle; word-spacing: 8.7px; white-space: pre;" x="117.493" y="72.895">RNM</text>
 </svg>

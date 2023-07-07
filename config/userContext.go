@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/Qv2ray/mmp-go/infra/lru"
-	"github.com/Qv2ray/mmp-go/infra/lrulist"
+	"github.com/CloudPassenger/rnm-go/infra/lru"
+	"github.com/CloudPassenger/rnm-go/infra/lrulist"
 	"math/rand"
 	"net"
 	"time"

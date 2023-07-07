@@ -1,7 +1,7 @@
 package dispatcher
 
 import (
-	"github.com/Qv2ray/mmp-go/config"
+	"github.com/CloudPassenger/rnm-go/config"
 	"sync"
 )
 

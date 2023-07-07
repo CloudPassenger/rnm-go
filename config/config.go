@@ -1,33 +1,29 @@
 package config
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
-	"sync"
 	"time"
 
-	"github.com/Qv2ray/mmp-go/cipher"
-	"github.com/Qv2ray/mmp-go/infra/lru"
+	"github.com/CloudPassenger/rnm-go/infra/lru"
 )
 
 type Config struct {
-	ConfPath   string       `json:"-"`
-	HttpClient *http.Client `json:"-"`
-	Groups     []Group      `json:"groups"`
+	ConfPath string `json:"-"`
+	// HttpClient *http.Client `json:"-"`
+	Groups []Group `json:"groups"`
 }
 
 type Server struct {
-	Name         string        `json:"name"`
-	Target       string        `json:"target"`
-	TCPFastOpen  bool          `json:"TCPFastOpen"`
-	Method       string        `json:"method"`
-	Password     string        `json:"password"`
-	MasterKey    []byte        `json:"-"`
-	UpstreamConf *UpstreamConf `json:"-"`
+	Name        string `json:"name"`
+	Target      string `json:"target"`
+	TCPFastOpen bool   `json:"TCPFastOpen"`
+	PassKey     string `json:"privKey"`
+	PrivateKey  []byte `json:"-"`
 }
 
 type Group struct {
@@ -35,7 +31,7 @@ type Group struct {
 	Port                int              `json:"port"`
 	ListenerTCPFastOpen bool             `json:"listenerTCPFastOpen"`
 	Servers             []Server         `json:"servers"`
-	Upstreams           []UpstreamConf   `json:"upstreams"`
+	FallbackServer      string           `json:"fallback"`
 	UserContextPool     *UserContextPool `json:"-"`
 
 	// AuthTimeoutSec sets a TCP read timeout to drop connections that fail to finish auth in time.
@@ -72,14 +68,15 @@ const (
 
 var (
 	config  *Config
-	Version = "debug"
+	Version = "v0.2.3"
 )
 
-func (g *Group) BuildMasterKeys() {
+func (g *Group) BuildPrivateKeys() {
 	servers := g.Servers
 	for j := range servers {
 		s := &servers[j]
-		s.MasterKey = cipher.EVPBytesToKey(s.Password, cipher.CiphersConf[s.Method].KeyLen)
+		// s.MasterKey = cipher.EVPBytesToKey(s.Password, cipher.CiphersConf[s.Method].KeyLen)
+		s.PrivateKey, _ = base64.RawURLEncoding.DecodeString(s.PassKey)
 	}
 }
 
@@ -87,97 +84,39 @@ func (g *Group) BuildUserContextPool(timeout time.Duration) {
 	g.UserContextPool = (*UserContextPool)(lru.New(lru.FixedTimeout, int64(timeout)))
 }
 
-func (config *Config) CheckMethodSupported() error {
+func (config *Config) CheckPrivkeyLength() error {
 	for _, g := range config.Groups {
 		for _, s := range g.Servers {
-			if _, ok := cipher.CiphersConf[s.Method]; !ok {
-				return fmt.Errorf("unsupported method: %v", s.Method)
+			privKey, err := base64.RawURLEncoding.DecodeString(s.PassKey)
+			if err != nil {
+				return err
+			}
+			if len(privKey) != 32 {
+				return fmt.Errorf("invalid private key in server: %s", s.Name)
 			}
 		}
 	}
 	return nil
 }
 
-func (config *Config) CheckDiverseCombinations() error {
-	groups := config.Groups
-	type methodPasswd struct {
-		method string
-		passwd string
-	}
-	for _, g := range groups {
-		m := make(map[methodPasswd]struct{})
+func (config *Config) CheckDuplicatedPrivKey() error {
+	for _, g := range config.Groups {
+		m := make(map[string]struct{})
 		for _, s := range g.Servers {
-			mp := methodPasswd{
-				method: s.Method,
-				passwd: s.Password,
-			}
+			mp := s.PassKey
 			if _, exists := m[mp]; exists {
-				return fmt.Errorf("make sure combinantions of method and password in the same group are diverse. counterexample: (%v,%v)", mp.method, mp.passwd)
+				return fmt.Errorf("make sure the privKey in the same group are diverse: %s", s.PassKey)
 			}
 		}
 	}
-	return nil
-}
-
-func pullFromUpstream(upstreamConf *UpstreamConf, c *http.Client) ([]Server, error) {
-	servers, err := upstreamConf.Upstream.GetServers(c)
-	if err != nil {
-		return nil, err
-	}
-	for i := range servers {
-		servers[i].UpstreamConf = upstreamConf
-	}
-	return servers, nil
-}
-
-func parseUpstreams(config *Config) (err error) {
-	var wg sync.WaitGroup
-
-	for i := range config.Groups {
-		group := &config.Groups[i]
-		mu := sync.Mutex{}
-		for i := range group.Upstreams {
-			upstreamConf := &group.Upstreams[i]
-
-			switch upstreamConf.Type {
-			case "outline":
-				upstreamConf.Upstream = &Outline{
-					Name: upstreamConf.Name,
-				}
-				err = json.Unmarshal(upstreamConf.Settings, upstreamConf.Upstream)
-				if err != nil {
-					return err
-				}
-			default:
-				return fmt.Errorf("unknown upstream type: %v", upstreamConf.Type)
-			}
-
-			wg.Add(1)
-			go func(group *Group, upstreamConf *UpstreamConf) {
-				defer wg.Done()
-				servers, err := pullFromUpstream(upstreamConf, config.HttpClient)
-				if err != nil {
-					upstreamConf.PullingError = err
-					log.Printf("[warning] Failed to pull from group %s upstream %s: %v\n", group.Name, upstreamConf.Name, err)
-					return
-				}
-				mu.Lock()
-				group.Servers = append(group.Servers, servers...)
-				mu.Unlock()
-				log.Printf("Pulled %d servers from group %s upstream %s\n", len(servers), group.Name, upstreamConf.Name)
-			}(group, upstreamConf)
-		}
-	}
-
-	wg.Wait()
 	return nil
 }
 
 func check(config *Config) (err error) {
-	if err = config.CheckMethodSupported(); err != nil {
+	if err = config.CheckPrivkeyLength(); err != nil {
 		return
 	}
-	if err = config.CheckDiverseCombinations(); err != nil {
+	if err = config.CheckDuplicatedPrivKey(); err != nil {
 		return
 	}
 	return
@@ -187,22 +126,19 @@ func build(config *Config) {
 	for i := range config.Groups {
 		g := &config.Groups[i]
 		g.BuildUserContextPool(LRUTimeout)
-		g.BuildMasterKeys()
+		g.BuildPrivateKeys()
 	}
 }
 
-func BuildConfig(confPath string, c *http.Client) (conf *Config, err error) {
+func BuildConfig(confPath string) (conf *Config, err error) {
 	conf = new(Config)
 	conf.ConfPath = confPath
-	conf.HttpClient = c
+	// conf.HttpClient = c
 	b, err := os.ReadFile(confPath)
 	if err != nil {
 		return nil, err
 	}
 	if err = json.Unmarshal(b, conf); err != nil {
-		return nil, err
-	}
-	if err = parseUpstreams(conf); err != nil {
 		return nil, err
 	}
 	if err = check(conf); err != nil {
@@ -216,11 +152,11 @@ func SetConfig(conf *Config) {
 	config = conf
 }
 
-func NewConfig(c *http.Client) *Config {
+func NewConfig() *Config {
 	var err error
 
 	version := flag.Bool("v", false, "version")
-	confPath := flag.String("conf", "example.json", "config file path")
+	confPath := flag.String("conf", "config.json", "config file path")
 	suppressTimestamps := flag.Bool("suppress-timestamps", false, "do not include timestamps in log")
 	flag.Parse()
 
@@ -233,7 +169,7 @@ func NewConfig(c *http.Client) *Config {
 		log.SetFlags(log.Flags() &^ (log.Ldate | log.Ltime))
 	}
 
-	if config, err = BuildConfig(*confPath, c); err != nil {
+	if config, err = BuildConfig(*confPath); err != nil {
 		log.Fatalln(err)
 	}
 	return config

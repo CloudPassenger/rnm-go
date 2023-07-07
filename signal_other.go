@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/Qv2ray/mmp-go/config"
+	"github.com/CloudPassenger/rnm-go/config"
 )
 
 func signalHandler(oldConf *config.Config) {
