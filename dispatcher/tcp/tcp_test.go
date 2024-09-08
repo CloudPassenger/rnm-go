@@ -21,11 +21,10 @@ func BenchmarkDispatcher_Auth(b *testing.B) {
 	}
 	g.BuildPrivateKeys()
 	g.BuildUserContextPool(10)
-	var buf [50]byte
 	var data [50]byte
 	var d = New(g)
 	addr, _ := net.ResolveIPAddr("tcp", "127.0.0.1:50000")
 	for i := 0; i < b.N; i++ {
-		d.Auth(buf[:], data[:], g.UserContextPool.GetOrInsert(addr, g.Servers))
+		d.Auth(data[:], g.UserContextPool.GetOrInsert(addr, g.Servers))
 	}
 }

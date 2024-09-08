@@ -1,6 +1,7 @@
 package tcp
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -20,8 +21,7 @@ import (
 )
 
 const (
-	BasicLen = 517  // Encrypted Payload of TLS
-	MaxLen   = 2048 // optimized buffer length
+	MaxLen = 4096 // optimized buffer length
 )
 
 func init() {
@@ -111,11 +111,23 @@ func (d *TCP) handleConn(conn net.Conn) error {
 
 	data := pool.Get(MaxLen)
 	defer pool.Put(data)
-	buf := pool.Get(BasicLen)
-	defer pool.Put(buf)
-	n, err := io.ReadAtLeast(conn, data, BasicLen) // n: Whole bunch of data
+
+	bufReader := bufio.NewReader(conn)
+
+	n, err := bufReader.Read(data[:1])
 	if err != nil {
-		return fmt.Errorf("[tcp] %s <-x-> %s handleConn ReadAtLeast error: %w", conn.RemoteAddr(), conn.LocalAddr(), err)
+		return fmt.Errorf("[tcp] %s <-x-> %s handleConn initial read error: %w", conn.RemoteAddr(), conn.LocalAddr(), err)
+	}
+
+	for bufReader.Buffered() > 0 && n < MaxLen {
+		m, err := bufReader.Read(data[n:])
+		n += m
+		if err != nil {
+			if err != io.EOF {
+				return fmt.Errorf("[tcp] %s <-x-> %s Error while reading: %w", conn.RemoteAddr(), conn.LocalAddr(), err)
+			}
+			break
+		}
 	}
 
 	// get user's context (preference)
@@ -124,7 +136,7 @@ func (d *TCP) handleConn(conn net.Conn) error {
 	d.gMutex.RUnlock()
 
 	// auth every server
-	server, _ := d.Auth(buf, data, userContext)
+	server, _ := d.Auth(data, userContext)
 	if server == nil {
 		if d.group.DrainOnAuthFail {
 			log.Printf("[tcp] auth failed, draining conn %s <-> %s", conn.RemoteAddr(), conn.LocalAddr())
@@ -211,16 +223,13 @@ func relay(lc, rc DuplexConn) error {
 	return innerErr
 }
 
-func (d *TCP) Auth(buf []byte, data []byte, userContext *config.UserContext) (hit *config.Server, content []byte) {
-	if len(data) < BasicLen {
-		return nil, nil
-	}
+func (d *TCP) Auth(data []byte, userContext *config.UserContext) (hit *config.Server, content []byte) {
 	return userContext.Auth(func(server *config.Server) ([]byte, bool) {
-		return probe(buf, data, server)
+		return probe(data, server)
 	})
 }
 
-func probe(buf []byte, data []byte, server *config.Server) ([]byte, bool) {
+func probe(data []byte, server *config.Server) ([]byte, bool) {
 	//[salt][encrypted payload length][length tag][encrypted payload][payload tag]
 	conf := &cipher.RealityCipher{}
 	// privKey, _ := base64.RawURLEncoding.DecodeString(server.PassKey)
