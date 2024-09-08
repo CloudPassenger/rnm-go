@@ -1,15 +1,20 @@
-FROM golang:1.21-alpine AS builder
-COPY . /go/src/github.com/CloudPassenger/rmm-go
-WORKDIR /go/src/github.com/CloudPassenger/rmm-go
+FROM golang:1.23 AS build
+
+WORKDIR /go/src/app
+COPY . .
 
 ENV CGO_ENABLED=0
 RUN set -ex \
-    && apk add git build-base \
     && export COMMIT=$(git rev-parse --short HEAD) \
     && export VERSION=$(git rev-parse --abbrev-ref HEAD) \
-    && go build -ldflags '-s -w -extldflags "-static"' -o rnm-go .
+    && go build -trimpath -ldflags '-s -w -extldflags "-static"' -o /go/bin/rnm-go .
 
-FROM alpine AS dist
-COPY --from=builder /go/src/github.com/CloudPassenger/rmm-go/rnm-go /usr/bin/
+
+FROM gcr.io/distroless/static-debian12
+
+COPY --from=build /go/bin/rnm-go /usr/bin/
+
 VOLUME /etc/rnm-go
-ENTRYPOINT ["rnm-go", "-conf", "/etc/rnm-go/config.json"]
+
+ENTRYPOINT ["rnm-go"]
+CMD ["-conf", "/etc/rnm-go/config.json"]
